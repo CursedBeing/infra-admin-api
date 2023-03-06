@@ -1,0 +1,5 @@
+﻿{
+  "pdns-host": "192.168.10.250:5811",
+  "pdns-server": "localhost",
+  "pdns-api-key": "9360d994-39ea-4a28-92b2-626444bbbca2"
+}
