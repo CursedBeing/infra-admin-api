@@ -70,35 +70,49 @@ public class PDNSService
     }
     private async Task SendPatch(string domain, RrSets sets)
     {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Patch, $@"http://{_appConfig["pdns-host"]}/api/v1/servers/{_appConfig["pdns-server"]}/zones/{domain}.");
-        request.Headers.Add("X-API-Key", $"{_appConfig["pdns-api-key"]}");
-        var json = JsonSerializer.Serialize(sets);
-        _logger.LogInformation(json);
-        request.Content = new StringContent(json);
-        var response = await client.SendAsync(request);
-        response.EnsureSuccessStatusCode();
+        try
+        {
+            _logger.LogInformation($"PDNS API Start on http://{_appConfig["pdns-host"]}/api/v1/servers/{_appConfig["pdns-server"]}/zones/{domain}.");
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Patch, $@"http://{_appConfig["pdns-host"]}/api/v1/servers/{_appConfig["pdns-server"]}/zones/{domain}.");
+            request.Headers.Add("X-API-Key", $"{_appConfig["pdns-api-key"]}");
+            var json = JsonSerializer.Serialize(sets);
+            request.Content = new StringContent(json);
+            _logger.LogInformation("PDNS REQUEST: {Request}", JsonSerializer.Serialize(request));
+            _logger.LogInformation("PDNS REQUEST CONTENT: {Content}", json);
+            var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            _logger.LogInformation("PDNS RESPONSE: {Request}", JsonSerializer.Serialize(response));
+            _logger.LogInformation("PDNS REQUEST CONTENT: {Content}", await response.Content.ReadAsStringAsync());
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("PDNS API Error: {Err}",e.Message);
+            throw;
+        }
     }
     
     private async Task SendDelete(string domain, RrSets sets)
     {
         try
         {
+            _logger.LogInformation($"PDNS API Start on http://{_appConfig["pdns-host"]}/api/v1/servers/{_appConfig["pdns-server"]}/zones/{domain}.");
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Patch, $@"http://{_appConfig["pdns-host"]}/api/v1/servers/{_appConfig["pdns-server"]}/zones/{domain}.");
             request.Headers.Add("X-API-Key", $"{_appConfig["pdns-api-key"]}");
             var json = JsonSerializer.Serialize(sets);
-            _logger.LogInformation(json);
             request.Content = new StringContent(json);
+            _logger.LogInformation("PDNS REQUEST: {Request}", JsonSerializer.Serialize(request));
+            _logger.LogInformation("PDNS REQUEST CONTENT: {Content}", json);
             var response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
+            _logger.LogInformation("PDNS RESPONSE: {Response}", JsonSerializer.Serialize(response));
+            _logger.LogInformation("PDNS REQUEST CONTENT: {Content}", await response.Content.ReadAsStringAsync());
         }
         catch (Exception e)
         {
-            _logger.LogError(e.Message!);
+            _logger.LogError("PDNS API Error: {Err}",e.Message);
             throw;
         }
-        
-        
     }
 }
