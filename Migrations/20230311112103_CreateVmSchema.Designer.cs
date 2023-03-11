@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using infrastracture_api;
@@ -11,9 +12,11 @@ using infrastracture_api;
 namespace infrastracture_api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230311112103_CreateVmSchema")]
+    partial class CreateVmSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,9 +40,6 @@ namespace infrastracture_api.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("ContactPhone")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ContactSite")
                         .HasColumnType("text");
 
                     b.Property<string>("Location")
@@ -163,15 +163,6 @@ namespace infrastracture_api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<bool>("AddedToMonintoring")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<long?>("HostId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("IpAddress")
                         .HasColumnType("text");
 
@@ -183,8 +174,6 @@ namespace infrastracture_api.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("HostId");
 
                     b.ToTable("vms");
                 });
@@ -205,15 +194,6 @@ namespace infrastracture_api.Migrations
                         .HasForeignKey("TypeId");
 
                     b.Navigation("Type");
-                });
-
-            modelBuilder.Entity("infrastracture_api.Models.Virtualization.VirtualMachine", b =>
-                {
-                    b.HasOne("infrastracture_api.Models.Datacenter.Device", "Host")
-                        .WithMany()
-                        .HasForeignKey("HostId");
-
-                    b.Navigation("Host");
                 });
 
             modelBuilder.Entity("infrastracture_api.Models.Datacenter.Datacenter", b =>

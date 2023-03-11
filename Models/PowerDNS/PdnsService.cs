@@ -42,7 +42,6 @@ public class PDNSService
         }
         
     }
-
     public async Task DeleteVmInPDNS(Host host)
     {
         try
@@ -91,7 +90,6 @@ public class PDNSService
             throw;
         }
     }
-    
     private async Task SendDelete(string domain, RrSets sets)
     {
         try
