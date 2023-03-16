@@ -1,6 +1,7 @@
 ﻿using infrastracture_api.Models.DbOps;
 using infrastracture_api.Models.Prometheus;
 using Microsoft.AspNetCore.Mvc;
+using OpenTracing;
 
 namespace infrastracture_api.Controllers;
 
@@ -9,15 +10,18 @@ namespace infrastracture_api.Controllers;
 public class PromController:ControllerBase
 {
     private HostDbOps _hostDb;
+    private readonly ITracer _tracer;
 
-    public PromController(HostDbOps hostDb)
+    public PromController(HostDbOps hostDb, ITracer tracer)
     {
         _hostDb = hostDb;
+        _tracer = tracer;
     }
 
     [HttpGet("vm")]
     public IActionResult GetVmTargets()
     {
+        var scope = _tracer.BuildSpan("GetVmHosts");
         List<string> VMs = new();
         var hosts = _hostDb.GetHostsFromDb();
         
