@@ -17,10 +17,6 @@ var builder = WebApplication.CreateBuilder(args);
 var serviceName = "infrastracture_api";
 var serviceVersion = "1.0.0";
 builder.Services.AddOpenTelemetry()
-    .WithMetrics(metrics =>
-    {
-        metrics.AddConsoleExporter();
-    })
     .WithTracing(tracerProviderBuilder =>
     {
         tracerProviderBuilder
