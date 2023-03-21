@@ -10,18 +10,15 @@ namespace infrastracture_api.Controllers;
 public class PromController:ControllerBase
 {
     private HostDbOps _hostDb;
-    private readonly ITracer _tracer;
 
-    public PromController(HostDbOps hostDb, ITracer tracer)
+    public PromController(HostDbOps hostDb)
     {
         _hostDb = hostDb;
-        _tracer = tracer;
     }
 
     [HttpGet("vm")]
     public IActionResult GetVmTargets()
     {
-        var scope = _tracer.BuildSpan("GetVmHosts");
         List<string> VMs = new();
         var hosts = _hostDb.GetHostsFromDb();
         
