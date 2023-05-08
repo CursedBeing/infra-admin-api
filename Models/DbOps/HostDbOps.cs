@@ -77,4 +77,13 @@ public class HostDbOps: IDbOps<Host>
         ctx.Hosts.RemoveRange(entities.ToArray());
         await ctx.SaveChangesAsync();
     }
+
+    public async Task<List<Host>> GetForMonitoring()
+    {
+        using var ctx = await _factory.CreateDbContextAsync();
+        return await ctx.Hosts
+            .Where(h => h.MonitorEnabled == true)
+            .AsNoTracking()
+            .ToListAsync();
+    }
 }
