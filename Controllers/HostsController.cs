@@ -27,7 +27,15 @@ public class HostsController: ControllerBase
     [HttpGet]
     public IActionResult Get()
     {
-        return Ok(_db.GetHostsFromDb());
+        try
+        {
+            return Ok(_db.GetHostsFromDb());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("{Msg}\n{Stack}", ex.Message, ex.StackTrace);
+            return Problem(detail: $"{ex.GetType().FullName}: {ex.Message}", statusCode: 500, title: "Внутреняя ошибка сервера");
+        }
     }
 
     [HttpGet("{Id:long}")]
@@ -39,10 +47,10 @@ public class HostsController: ControllerBase
             if (data is null) return Ok(new Host());
             return Ok(data);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _logger.LogError("{Msg}\n{Stack}", e.Message, e.StackTrace);
-            return Problem(detail: "Internal server error", statusCode: 500);
+            _logger.LogError("{Msg}\n{Stack}", ex.Message, ex.StackTrace);
+            return Problem(detail: $"{ex.GetType().FullName}: {ex.Message}", statusCode: 500, title: "Внутреняя ошибка сервера");
         }
     }
     
@@ -66,10 +74,10 @@ public class HostsController: ControllerBase
             await _db.Create(model);
             return Ok(model);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _logger.LogError("{Msg}\n{Stack}", e.Message, e.StackTrace);
-            return Problem(title: "Internal server error", detail: e.Message, statusCode: 500);
+            _logger.LogError("{Msg}\n{Stack}", ex.Message, ex.StackTrace);
+            return Problem(detail: $"{ex.GetType().FullName}: {ex.Message}", statusCode: 500, title: "Внутреняя ошибка сервера");
         }
     }
     
@@ -82,10 +90,10 @@ public class HostsController: ControllerBase
             await _db.Update(model);
             return Ok(model);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _logger.LogError("{Msg}\n{Stack}", e.Message, e.StackTrace);
-            return Problem(detail: "Internal server error", statusCode: 500);
+            _logger.LogError("{Msg}\n{Stack}", ex.Message, ex.StackTrace);
+            return Problem(detail: $"{ex.GetType().FullName}: {ex.Message}", statusCode: 500, title: "Внутреняя ошибка сервера");
         }
     }
     
@@ -103,10 +111,10 @@ public class HostsController: ControllerBase
             }
             return Ok(model);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            _logger.LogError("{Msg}\n{Stack}", e.Message, e.StackTrace);
-            return Problem(detail: "Internal server error", statusCode: 500);
+            _logger.LogError("{Msg}\n{Stack}", ex.Message, ex.StackTrace);
+            return Problem(detail: $"{ex.GetType().FullName}: {ex.Message}", statusCode: 500, title: "Внутреняя ошибка сервера");
         }
     }
 
