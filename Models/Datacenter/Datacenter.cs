@@ -6,22 +6,33 @@ namespace infrastracture_api.Models.Datacenter;
 /// Класс описывает сущность ЦОД. Информация о цоде, контактах представителей ЦОДа и расположение.
 /// </summary>
 [Table("datacenters")]
+[GraphQLDescription("Сущность Датацентр. Описывает как локальные так и внешние датацентры")]
 public class Datacenter
 {
-    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    [GraphQLType(typeof(IdType))]
     public long Id { get; set; }
-
-    [Required] 
-    [StringLength(250)] 
+    [GraphQLDescription("Имя датацентра")]
+    [Required,StringLength(250)] 
     public string Name { get; set; } = string.Empty;
-    /// <summary>
-    /// Физическое расположение оборудования или виртуальной машины.
-    /// </summary>
+    [GraphQLDescription("Физическое расположение оборудования")]
     public string? Location { get; set; } = string.Empty;
-    //Контактные данные представителей ЦОД
+    [GraphQLDescription("Имя контактного лица датацентра")]
     public string? ContactName { get; set; }
+    [GraphQLDescription("Email контактного лица датацентра")]
     public string? ContactEmail { get; set; }
+    [GraphQLDescription("Телефон контактного лица датацентра")]
     public string? ContactPhone { get; set; }
+    [GraphQLDescription("Сайт")]
     public string? ContactSite { get; set; }
-    public List<Device>? Devices { get; set; }
+    [GraphQLDescription("Флаг указывает на то что датацентр расположен в другой компании")]
+    public bool? IsExternal { get; set; } = false;
+    public bool? IsActive { get; set; } = true;
+
+    public DateTime? Created { get; set; } = DateTime.Now;
+    public DateTime? Updated { get; set; } = DateTime.Now;
+    
+    [GraphQLDescription("Сетевые устройства")]
+    public List<NetworkDevice>? NetDevices { get; set; }
+    [GraphQLDescription("Гипервизоры и хосты виртуализации")]
+    public List<HvHostDevice>? Hypervisors { get; set; }
 }

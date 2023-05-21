@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace infrastracture_api.Models.Datacenter;
 
-public class DcDbOps: IDbOps<Datacenter>
+public class DcDbOps
 {
     private IDbContextFactory<AppDbContext> _factory;
     private ILogger<DcDbOps> _logger;
@@ -14,19 +14,12 @@ public class DcDbOps: IDbOps<Datacenter>
         _factory = factory;
         _logger = logger;
     }
-    public async Task Create(Datacenter entity)
+    public async Task<Datacenter> Create(Datacenter entity)
     {
         using var ctx = _factory.CreateDbContext();
-        try
-        {
-            await ctx.Datacenters.AddAsync(entity);
-            await ctx.SaveChangesAsync();
-        }
-        catch (Exception e)
-        {
-            _logger.LogError("{Error}\n{Stack}", e.Message, e.StackTrace);
-            throw;
-        }
+        await ctx.Datacenters.AddAsync(entity);
+        await ctx.SaveChangesAsync();
+        return entity;
     }
     public async Task Update(Datacenter entity)
     {
@@ -63,7 +56,6 @@ public class DcDbOps: IDbOps<Datacenter>
         {
             return ctx.Datacenters
                 .AsNoTracking()
-                .Include(dc => dc.Devices)
                 .ToList();
         }
         catch (Exception e)

@@ -1,28 +1,32 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using infrastracture_api.Models.Domains;
 using Microsoft.Build.Framework;
 
 namespace infrastracture_api.Models.Datacenter;
 
-[Table("devices")]
-public class Device: Host
+public class Device
 {
+    [GraphQLType(typeof(IdType))]
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public new long Id { get; set; }
+    public long Id { get; set; }
+
+    public string DeviceName { get; set; } = string.Empty;
+    //public InfraDomain? Domain { get; set; }
     public DeviceType Type { get; set; } = DeviceType.StandaloneServer;
     public bool IsActive { get; set; } = true;
     public string? Manufacturer { get; set; } = string.Empty;
     public string? Model { get; set; } = string.Empty;
+    
+    public long? DatacenterId { get; set; }
+    public Datacenter? Datacenter { get; set; }
+
     public enum DeviceType
     {
         StandaloneServer,
         Router,
         Switch,
-        Hub
+        Hub,
+        Hypervisor
     }
-    
-    [ForeignKey(nameof(Datacenter))]
-    public long? DcId { get; set; }
-    public Datacenter? Dc { get; set; }
-    
 }

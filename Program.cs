@@ -1,43 +1,14 @@
-using System.Diagnostics;
 using infrastracture_api;
+using infrastracture_api.GraphQL;
 using infrastracture_api.Middlewares;
 using infrastracture_api.Models.Datacenter;
 using infrastracture_api.Models.DbOps;
 using infrastracture_api.Services;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using Npgsql;
-using OpenTelemetry.Exporter;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
-var serviceName = "infrastracture_api";
-var serviceVersion = "1.0.0";
-builder.Services.AddOpenTelemetry()
-    .WithTracing(tracerProviderBuilder =>
-    {
-        tracerProviderBuilder
-            .AddZipkinExporter(opt =>
-            {
-                opt.Endpoint = new Uri("http://mon-stor1.unix.teamstr.ru:9411/api/v2/spans");
-                opt.UseShortTraceIds = true;
-            })
-            .AddSource(serviceName)
-            .SetResourceBuilder(
-                ResourceBuilder.CreateDefault()
-                    .AddService(serviceName: serviceName, serviceVersion: serviceVersion))
-            .AddAspNetCoreInstrumentation()
-            .AddSqlClientInstrumentation()
-            .AddNpgsql();
-    });
-
-// Add services to the container.
-builder.Configuration.AddJsonFile("Conf/appsettings.json");
-builder.Configuration.AddJsonFile("Conf/pdns.json");
-if(builder.Environment.IsDevelopment()) builder.Configuration.AddJsonFile("Conf/appsettings.Development.json");
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 //Logging
 builder.Host.UseSerilog((ctx, lc) => lc
     .WriteTo.Console(
@@ -46,27 +17,38 @@ builder.Host.UseSerilog((ctx, lc) => lc
     .Enrich.FromLogContext()
     .ReadFrom.Configuration(ctx.Configuration));
 
+// Add services to the container.
+builder.Configuration.AddJsonFile("Conf/appsettings.json");
+builder.Configuration.AddJsonFile("Conf/pdns.json");
+if(builder.Environment.IsDevelopment()) builder.Configuration.AddJsonFile("Conf/appsettings.Development.json");
+
 //Database
 var dbConnStr = builder.Configuration.GetConnectionString("db");
-builder.Services.AddDbContextFactory<AppDbContext>(opt =>
+builder.Services.AddPooledDbContextFactory<AppDbContext>(opt =>
 {
     opt.UseNpgsql(dbConnStr);
     opt.EnableSensitiveDataLogging(true);
     opt.EnableDetailedErrors(true);
 });
-
-builder.Services.AddControllers().AddNewtonsoftJson(opt =>
-{
-    opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-});
-
+builder.Services.AddControllers();
 builder.Services.AddDatacenterServices();
 builder.Services.AddScoped<HostDbOps>();
 builder.Services.AddScoped<PDNSService>();
-
+builder.Services
+    .AddGraphQLServer()
+    .AddMutationType<DcMutation>()
+    .AddQueryType<DcQuery>()
+    .InitializeOnStartup();
+builder.Services.AddErrorFilter<GraphQLErrorFilter>();
 var app = builder.Build();
-app.UseAuthorization();
-
 app.MapControllers();
+app.MapGraphQL();
 app.UseMiddleware<LogHeaderMiddleware>();
-app.Run();
+try
+{
+    app.Run();
+}
+catch (Exception e)
+{
+    File.Create("crit.log");
+}

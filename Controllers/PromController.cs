@@ -1,7 +1,6 @@
 ﻿using infrastracture_api.Models.DbOps;
 using infrastracture_api.Models.Prometheus;
 using Microsoft.AspNetCore.Mvc;
-using OpenTracing;
 
 namespace infrastracture_api.Controllers;
 
