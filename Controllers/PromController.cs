@@ -16,10 +16,10 @@ public class PromController:ControllerBase
     }
 
     [HttpGet("vm")]
-    public IActionResult GetVmTargets()
+    public async Task<IActionResult> GetVmTargets()
     {
         List<string> VMs = new();
-        var hosts = _hostDb.GetHostsFromDb();
+        var hosts = await _hostDb.GetForMonitoring();
         
         foreach (var host in hosts)
         {
@@ -43,7 +43,7 @@ public class PromController:ControllerBase
             Labels = labels
         };
 
-        Target[] res = new[] { targets };
+        Target[] res = new Target[] { targets };
 
         return Ok(res);
     }

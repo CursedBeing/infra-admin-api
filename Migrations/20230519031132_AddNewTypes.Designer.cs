@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using infrastracture_api;
@@ -11,9 +12,11 @@ using infrastracture_api;
 namespace infrastracture_api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230519031132_AddNewTypes")]
+    partial class AddNewTypes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,15 +45,6 @@ namespace infrastracture_api.Migrations
                     b.Property<string>("ContactSite")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsExternal")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Location")
                         .HasColumnType("text");
 
@@ -59,15 +53,12 @@ namespace infrastracture_api.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("character varying(250)");
 
-                    b.Property<DateTime?>("Updated")
-                        .HasColumnType("timestamp with time zone");
-
                     b.HasKey("Id");
 
-                    b.ToTable("datacenters", (string)null);
+                    b.ToTable("datacenters");
                 });
 
-            modelBuilder.Entity("infrastracture_api.Models.Datacenter.HvHostDevice", b =>
+            modelBuilder.Entity("infrastracture_api.Models.Datacenter.Device", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -75,32 +66,13 @@ namespace infrastracture_api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long?>("DatacenterId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("DeviceName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("IpAddress")
-                        .HasColumnType("text");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Manufacturer")
                         .HasColumnType("text");
 
-                    b.Property<string>("MgmtIpAddress")
-                        .HasColumnType("text");
-
                     b.Property<string>("Model")
-                        .HasColumnType("text");
-
-                    b.Property<string>("OsType")
-                        .HasColumnType("text");
-
-                    b.Property<string>("OsVersion")
                         .HasColumnType("text");
 
                     b.Property<int>("Type")
@@ -108,49 +80,9 @@ namespace infrastracture_api.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DatacenterId");
+                    b.ToTable("Device");
 
-                    b.ToTable("hypervisors", (string)null);
-                });
-
-            modelBuilder.Entity("infrastracture_api.Models.Datacenter.NetworkDevice", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<long?>("DatacenterId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("DeviceName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Manufacturer")
-                        .HasColumnType("text");
-
-                    b.Property<string>("MgmtIpAddress")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Model")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("PortCount")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DatacenterId");
-
-                    b.ToTable("netdevices", (string)null);
+                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("infrastracture_api.Models.Host", b =>
@@ -187,7 +119,7 @@ namespace infrastracture_api.Migrations
 
                     b.HasIndex("TypeId");
 
-                    b.ToTable("Hosts", (string)null);
+                    b.ToTable("Hosts");
                 });
 
             modelBuilder.Entity("infrastracture_api.Models.HostType", b =>
@@ -207,25 +139,83 @@ namespace infrastracture_api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HostTypes", (string)null);
+                    b.ToTable("HostTypes");
+                });
+
+            modelBuilder.Entity("infrastracture_api.Models.Virtualization.VirtualMachine", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<bool>("AddedToMonintoring")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<long?>("HostId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("IpAddress")
+                        .HasColumnType("text");
+
+                    b.Property<string>("MgmtIp")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ServerName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HostId");
+
+                    b.ToTable("vms");
                 });
 
             modelBuilder.Entity("infrastracture_api.Models.Datacenter.HvHostDevice", b =>
                 {
-                    b.HasOne("infrastracture_api.Models.Datacenter.Datacenter", "Datacenter")
-                        .WithMany("Hypervisors")
-                        .HasForeignKey("DatacenterId");
+                    b.HasBaseType("infrastracture_api.Models.Datacenter.Device");
 
-                    b.Navigation("Datacenter");
+                    b.Property<long?>("DatacenterId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("IpAddress")
+                        .HasColumnType("text");
+
+                    b.Property<string>("MgmtIpAddress")
+                        .HasColumnType("text");
+
+                    b.Property<string>("OsType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("OsVersion")
+                        .HasColumnType("text");
+
+                    b.HasIndex("DatacenterId");
+
+                    b.ToTable("hypervisors");
                 });
 
             modelBuilder.Entity("infrastracture_api.Models.Datacenter.NetworkDevice", b =>
                 {
-                    b.HasOne("infrastracture_api.Models.Datacenter.Datacenter", "Datacenter")
-                        .WithMany("NetDevices")
-                        .HasForeignKey("DatacenterId");
+                    b.HasBaseType("infrastracture_api.Models.Datacenter.Device");
 
-                    b.Navigation("Datacenter");
+                    b.Property<long?>("DatacenterId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("MgmtIpAddress")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("PortCount")
+                        .HasColumnType("integer");
+
+                    b.HasIndex("DatacenterId");
+
+                    b.ToTable("netdevices");
                 });
 
             modelBuilder.Entity("infrastracture_api.Models.Host", b =>
@@ -235,6 +225,41 @@ namespace infrastracture_api.Migrations
                         .HasForeignKey("TypeId");
 
                     b.Navigation("Type");
+                });
+
+            modelBuilder.Entity("infrastracture_api.Models.Virtualization.VirtualMachine", b =>
+                {
+                    b.HasOne("infrastracture_api.Models.Datacenter.Device", "Host")
+                        .WithMany()
+                        .HasForeignKey("HostId");
+
+                    b.Navigation("Host");
+                });
+
+            modelBuilder.Entity("infrastracture_api.Models.Datacenter.HvHostDevice", b =>
+                {
+                    b.HasOne("infrastracture_api.Models.Datacenter.Datacenter", null)
+                        .WithMany("Hypervisors")
+                        .HasForeignKey("DatacenterId");
+
+                    b.HasOne("infrastracture_api.Models.Datacenter.Device", null)
+                        .WithOne()
+                        .HasForeignKey("infrastracture_api.Models.Datacenter.HvHostDevice", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("infrastracture_api.Models.Datacenter.NetworkDevice", b =>
+                {
+                    b.HasOne("infrastracture_api.Models.Datacenter.Datacenter", null)
+                        .WithMany("NetDevices")
+                        .HasForeignKey("DatacenterId");
+
+                    b.HasOne("infrastracture_api.Models.Datacenter.Device", null)
+                        .WithOne()
+                        .HasForeignKey("infrastracture_api.Models.Datacenter.NetworkDevice", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("infrastracture_api.Models.Datacenter.Datacenter", b =>

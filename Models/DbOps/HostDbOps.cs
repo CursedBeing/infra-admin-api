@@ -30,7 +30,6 @@ public class HostDbOps: IDbOps<Host>
             .Include(h=>h.Type)
             .FirstOrDefault(h => h.Id == id);
     }
-
     public Host? FindHostByName(string name, string domain)
     {
         using var ctx = _factory.CreateDbContext();
@@ -40,7 +39,6 @@ public class HostDbOps: IDbOps<Host>
             .FirstOrDefault(h => h.HostName == name);
         return data;
     }
-    
     public Host? FindHostByIp(string ip)
     {
         using var ctx = _factory.CreateDbContext();
@@ -49,7 +47,6 @@ public class HostDbOps: IDbOps<Host>
             .FirstOrDefault(h => h.IpAddress == ip);
         return data;
     }
-    
     public async Task Create(Host entity)
     {
         using var ctx = await _factory.CreateDbContextAsync();
@@ -79,5 +76,14 @@ public class HostDbOps: IDbOps<Host>
         using var ctx = await _factory.CreateDbContextAsync();
         ctx.Hosts.RemoveRange(entities.ToArray());
         await ctx.SaveChangesAsync();
+    }
+
+    public async Task<List<Host>> GetForMonitoring()
+    {
+        using var ctx = await _factory.CreateDbContextAsync();
+        return await ctx.Hosts
+            .Where(h => h.MonitorEnabled == true)
+            .AsNoTracking()
+            .ToListAsync();
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using infrastracture_api;
@@ -11,9 +12,11 @@ using infrastracture_api;
 namespace infrastracture_api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230519035448_EditDatacenters")]
+    partial class EditDatacenters
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,7 +67,7 @@ namespace infrastracture_api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("datacenters", (string)null);
+                    b.ToTable("datacenters");
                 });
 
             modelBuilder.Entity("infrastracture_api.Models.Datacenter.HvHostDevice", b =>
@@ -110,7 +113,7 @@ namespace infrastracture_api.Migrations
 
                     b.HasIndex("DatacenterId");
 
-                    b.ToTable("hypervisors", (string)null);
+                    b.ToTable("hypervisors");
                 });
 
             modelBuilder.Entity("infrastracture_api.Models.Datacenter.NetworkDevice", b =>
@@ -150,7 +153,7 @@ namespace infrastracture_api.Migrations
 
                     b.HasIndex("DatacenterId");
 
-                    b.ToTable("netdevices", (string)null);
+                    b.ToTable("netdevices");
                 });
 
             modelBuilder.Entity("infrastracture_api.Models.Host", b =>
@@ -187,7 +190,7 @@ namespace infrastracture_api.Migrations
 
                     b.HasIndex("TypeId");
 
-                    b.ToTable("Hosts", (string)null);
+                    b.ToTable("Hosts");
                 });
 
             modelBuilder.Entity("infrastracture_api.Models.HostType", b =>
@@ -207,7 +210,7 @@ namespace infrastracture_api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HostTypes", (string)null);
+                    b.ToTable("HostTypes");
                 });
 
             modelBuilder.Entity("infrastracture_api.Models.Datacenter.HvHostDevice", b =>
