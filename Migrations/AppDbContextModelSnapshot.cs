@@ -64,7 +64,7 @@ namespace infrastracture_api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("datacenters");
+                    b.ToTable("datacenters", (string)null);
                 });
 
             modelBuilder.Entity("infrastracture_api.Models.Datacenter.HvHostDevice", b =>
@@ -110,7 +110,7 @@ namespace infrastracture_api.Migrations
 
                     b.HasIndex("DatacenterId");
 
-                    b.ToTable("hypervisors");
+                    b.ToTable("hypervisors", (string)null);
                 });
 
             modelBuilder.Entity("infrastracture_api.Models.Datacenter.NetworkDevice", b =>
@@ -150,7 +150,7 @@ namespace infrastracture_api.Migrations
 
                     b.HasIndex("DatacenterId");
 
-                    b.ToTable("netdevices");
+                    b.ToTable("netdevices", (string)null);
                 });
 
             modelBuilder.Entity("infrastracture_api.Models.Host", b =>
@@ -187,7 +187,7 @@ namespace infrastracture_api.Migrations
 
                     b.HasIndex("TypeId");
 
-                    b.ToTable("Hosts");
+                    b.ToTable("Hosts", (string)null);
                 });
 
             modelBuilder.Entity("infrastracture_api.Models.HostType", b =>
@@ -207,7 +207,7 @@ namespace infrastracture_api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HostTypes");
+                    b.ToTable("HostTypes", (string)null);
                 });
 
             modelBuilder.Entity("infrastracture_api.Models.Datacenter.HvHostDevice", b =>

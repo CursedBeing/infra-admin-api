@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using infrastracture_api.Models.Virtualization;
 
 namespace infrastracture_api.Models.Datacenter;
 /// <summary>

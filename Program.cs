@@ -11,9 +11,6 @@ var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 //Logging
 builder.Host.UseSerilog((ctx, lc) => lc
-    .WriteTo.Console(
-        outputTemplate:
-        "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}")
     .Enrich.FromLogContext()
     .ReadFrom.Configuration(ctx.Configuration));
 
@@ -39,7 +36,6 @@ builder.Services
     .AddMutationType<DcMutation>()
     .AddQueryType<DcQuery>()
     .InitializeOnStartup();
-builder.Services.AddErrorFilter<GraphQLErrorFilter>();
 var app = builder.Build();
 app.MapControllers();
 app.MapGraphQL();
