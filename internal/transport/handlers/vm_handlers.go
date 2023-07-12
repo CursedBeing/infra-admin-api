@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"infra-api/internal/database"
 	"infra-api/internal/models/dc"
-	"infra-api/internal/models/powerdns"
+	"infra-api/internal/services/powerdns"
 	"infra-api/internal/transport"
 	"log"
 )
@@ -14,7 +14,6 @@ func GetVms(c *gin.Context) {
 	vms := database.GetVmsFromDb()
 	c.JSON(200, vms)
 }
-
 func GetVmInfo(c *gin.Context) {
 	vm := dc.Vm{}
 	err := c.BindJSON(vm)
@@ -41,7 +40,6 @@ func GetVmInfo(c *gin.Context) {
 
 	c.JSON(200, vm)
 }
-
 func CreateVm(c *gin.Context) {
 	vm := dc.Vm{}
 	err := c.BindJSON(&vm)
@@ -83,7 +81,6 @@ func CreateVm(c *gin.Context) {
 
 }
 func UpdateVm(c *gin.Context) {
-
 }
 func RemoveVm(c *gin.Context) {
 	vm := dc.Vm{}
