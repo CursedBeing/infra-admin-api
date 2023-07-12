@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"infra-api/internal/database"
 	"infra-api/internal/models/dc"
-	"infra-api/internal/services/powerdns"
+	"infra-api/internal/models/powerdns"
 	"infra-api/internal/transport"
 	"log"
 )
