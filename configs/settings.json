@@ -1,0 +1,6 @@
+{
+  "db": "postgres://service_user:service_user@tools1.unix.teamstr.ru:5432/infra-admin-dev?sslmode=disable&search_path=public&application_name=infra-api",
+  "listenPort": ":5000",
+  "powerdns_endpoint": "http://192.168.10.250:5811",
+  "powerdns_apikey": "9360d994-39ea-4a28-92b2-626444bbbca2"
+}
