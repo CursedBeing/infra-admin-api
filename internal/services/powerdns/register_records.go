@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"infra-api/internal/config"
 	"infra-api/internal/models/dc"
+	"infra-api/internal/models/powerdns"
 	"io"
 	"log"
 	"net/http"
@@ -48,8 +49,8 @@ func RegisterARecord(data any, endpoint string) bool {
 }
 func RemoveARecord(data any, endpoint string) error {
 	//Загружаем конфигурацию
-	config := config.Config{}
-	config = config.LoadConfig()
+	var cfg config.Config
+	cfg = cfg.LoadConfig()
 
 	//Сериализуем данные в JSON
 	jsonData, err := json.Marshal(data)
@@ -61,7 +62,7 @@ func RemoveARecord(data any, endpoint string) error {
 	//Создаем запрос и указываем параметры
 	req, err := http.NewRequest("PATCH", endpoint, bytes.NewBuffer(jsonData))
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("X-API-Key", config.PowerdnsApiKey)
+	req.Header.Set("X-API-Key", cfg.PowerdnsApiKey)
 	log.Println("DEBUG:", req)
 	if err != nil {
 		return err
@@ -86,15 +87,15 @@ func RemoveARecord(data any, endpoint string) error {
 }
 func AddVmToPDNS(vm dc.Vm) {
 	//Готовим модель
-	record := RecordList{
+	record := powerdns.RecordList{
 		Content:  vm.IpAddress,
 		Disabled: false,
 	}
 
-	records := []RecordList{}
+	var records []powerdns.RecordList
 	records = append(records, record)
 
-	sets := Rrset{
+	var sets = powerdns.Rrset{
 		Name:       vm.Name + "." + vm.Domain + ".",
 		Type:       "A",
 		Ttl:        3600,
@@ -102,27 +103,27 @@ func AddVmToPDNS(vm dc.Vm) {
 		Records:    records,
 	}
 
-	rrsets := Rrsets{}
+	rrsets := powerdns.Rrsets{}
 	rrsets.Sets = append(rrsets.Sets, sets)
 
 	//Отправляем запрос
-	config := config.Config{}
-	config = config.LoadConfig()
-	RegisterARecord(rrsets, config.PowerdnsEndpoint+"/api/v1/servers/localhost/zones/"+vm.Domain+".")
+	var cfg config.Config
+	cfg = cfg.LoadConfig()
+	RegisterARecord(rrsets, cfg.PowerdnsEndpoint+"/api/v1/servers/localhost/zones/"+vm.Domain+".")
 }
 func RemoveVmToPDNS(vm dc.Vm) {
 	//Готовим модель
-	sets := Rrset{
+	sets := powerdns.Rrset{
 		Name:       vm.Name + "." + vm.Domain + ".",
 		Type:       "A",
 		ChangeType: "DELETE",
 	}
 
-	rrsets := Rrsets{}
+	rrsets := powerdns.Rrsets{}
 	rrsets.Sets = append(rrsets.Sets, sets)
 
 	//Отправляем запрос
-	config := config.Config{}
-	config = config.LoadConfig()
-	_ = RemoveARecord(rrsets, config.PowerdnsEndpoint+"/api/v1/servers/localhost/zones/"+vm.Domain+".")
+	var cfg config.Config
+	cfg = cfg.LoadConfig()
+	_ = RemoveARecord(rrsets, cfg.PowerdnsEndpoint+"/api/v1/servers/localhost/zones/"+vm.Domain+".")
 }

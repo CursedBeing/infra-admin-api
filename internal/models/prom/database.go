@@ -11,7 +11,7 @@ func GetVmFromDb() []dc.Vm {
 	ctx := context.Background()
 	db := database.Database{}
 	dbCtx := db.SqlConnect()
-	vms := []dc.Vm{}
+	var vms []dc.Vm
 	err := dbCtx.NewSelect().
 		Model(&vms).
 		Where("in_monitoring = true").
