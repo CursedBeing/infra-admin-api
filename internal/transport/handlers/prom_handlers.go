@@ -7,12 +7,16 @@ import (
 
 func GetVmList(c *gin.Context) {
 	targets := []prom.TargetQuery{}
-	list := prom.GetVmFromDb()
+	list, err := prom.GetVmFromDb()
+	if err != nil {
+		c.JSON(500, "Internal server error")
+	}
+
 	var target = prom.TargetQuery{}
 	if len(list) > 0 {
 		for _, item := range list {
 			target = prom.TargetQuery{
-				Targets: []string{item.Name + "." + item.Domain + ":9273"},
+				Targets: []string{item.Name + "." + item.Domain.Name + ":9273"},
 				Labels:  map[string]string{"owner": "teamstr", "type": "vm", "location": "yar"},
 			}
 			targets = append(targets, target)

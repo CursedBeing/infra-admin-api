@@ -9,7 +9,7 @@ import (
 var configuration config.Config
 
 func main() {
-	gin.SetMode(gin.ReleaseMode)
+	//gin.SetMode(gin.ReleaseMode)
 	//Загружаем конфиг
 	configuration = configuration.LoadConfig()
 	//gin.SetMode(gin.ReleaseMode)
@@ -29,6 +29,7 @@ func main() {
 		v1.GET("/vms", handlers.GetVms)
 		vmRouter := v1.Group("/vm")
 		{
+			vmRouter.POST("/find", handlers.FindVm)
 			vmRouter.POST("/create", handlers.CreateVm)
 			vmRouter.POST("/update", handlers.UpdateVm)
 			vmRouter.POST("/remove", handlers.RemoveVm)
@@ -41,8 +42,8 @@ func main() {
 	}
 
 	//Запускаем!
-	if configuration.ListenPort == "" {
-		configuration.ListenPort = ":5000"
+	if configuration.Core.Listen == "" {
+		configuration.Core.Listen = ":5000"
 	}
-	_ = router.Run(configuration.ListenPort)
+	_ = router.Run(configuration.Core.Listen)
 }

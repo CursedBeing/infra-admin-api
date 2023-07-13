@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-func GetVmFromDb() []dc.Vm {
+func GetVmFromDb() ([]dc.Vm, error) {
 	ctx := context.Background()
 	db := database.Database{}
 	dbCtx := db.SqlConnect()
@@ -16,9 +16,14 @@ func GetVmFromDb() []dc.Vm {
 		Model(&vms).
 		Where("in_monitoring = true").
 		Scan(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	err = dbCtx.Close()
 	if err != nil {
 		log.Println("SQL ERROR:", err.Error())
+		return nil, err
 	}
-	return vms
+	return vms, nil
 }

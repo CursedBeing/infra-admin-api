@@ -6,10 +6,17 @@ import (
 )
 
 type Config struct {
-	Db               string `json:"db"`
-	ListenPort       string `json:"listenPort"`
-	PowerdnsEndpoint string `json:"powerdns_endpoint"`
-	PowerdnsApiKey   string `json:"powerdns_apikey"`
+	PowerDNS PowerDNSConfig `json:"power_dns"`
+	Core     CoreConfig     `json:"core"`
+}
+
+type CoreConfig struct {
+	Listen   string `json:"listen"`
+	Database string `json:"database"`
+}
+type PowerDNSConfig struct {
+	Endpoint string `json:"endpoint"`
+	ApiKey   string `json:"api_key"`
 }
 
 // LoadConfig Загружает конфигурацию из файла settings.json

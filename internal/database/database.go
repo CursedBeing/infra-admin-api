@@ -24,5 +24,5 @@ func (db Database) SqlConnect() *bun.DB {
 func (Database) getConnectionString() string {
 	Configuration := config.Config{}
 	Configuration = Configuration.LoadConfig()
-	return Configuration.Db
+	return Configuration.Core.Database
 }

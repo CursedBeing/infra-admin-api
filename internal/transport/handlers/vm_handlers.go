@@ -11,7 +11,7 @@ import (
 
 // GetVms Получить список всех виртуальных машин
 func GetVms(c *gin.Context) {
-	vms := database.GetVmsFromDb()
+	vms, _ := database.GetVmsFromDbV2()
 	c.JSON(200, vms)
 }
 func GetVmInfo(c *gin.Context) {
@@ -39,6 +39,24 @@ func GetVmInfo(c *gin.Context) {
 	}
 
 	c.JSON(200, vm)
+}
+func FindVm(c *gin.Context) {
+	f := new(dc.VmFilter)
+	err := c.BindJSON(&f)
+	if err != nil {
+		log.Println("ERROR:", err.Error())
+		c.JSON(400, transport.HTTPError{Type: "Bad request", Title: "Ошибка", Data: err.Error()})
+		return
+	}
+
+	vms := make([]dc.Vm, 0)
+	vms, err = database.FindVm(*f)
+	if err != nil {
+		c.JSON(500, transport.HTTPError{Type: "Internal Server Error", Title: "Внутреняя ошибка сервера", Data: "Ошибка выполнения SQL команды"})
+		return
+	}
+
+	c.JSON(200, vms)
 }
 func CreateVm(c *gin.Context) {
 	vm := dc.Vm{}
